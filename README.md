@@ -1,0 +1,1 @@
+# SpartaNews2JO
