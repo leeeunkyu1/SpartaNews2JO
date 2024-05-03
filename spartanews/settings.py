@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     #third_party
     'rest_framework',
     #local
-    'acoounts',
+    'accounts',
     'articles',
 ]
 
