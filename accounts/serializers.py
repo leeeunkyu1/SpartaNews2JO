@@ -16,6 +16,11 @@ class UserSerializer(serializers.ModelSerializer):
             'favorite_articles',
             'favorite_comments',
         ]
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret.pop("password")
+        return ret
 
     def validate(self, attrs):
         attrs = super().validate(attrs)
