@@ -22,9 +22,8 @@ class Article(models.Model):
 # Create your models here.d
 class Comment(models.Model):
     content = models.TextField()
-    # author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    favorite = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="comment_favorites", blank="True")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    # favorite = models.ManyToManyField(get_user_model())
-
