@@ -25,11 +25,12 @@ class WriteArticleAPIView(APIView):
 #         serializer = UserSerializer(comments)
 #         return Response(serializer.data)
 
-# class FavoriteArticleAPIView(APIView):
-#     def get(self, request,username):
-#         articles=get_object_or_404(Article,favorite=username)
-#         serializer = UserSerializer(articles)
-#         return Response(serializer.data)
+class FavoriteArticleAPIView(APIView):
+    def get(self, request,username):
+        user=get_object_or_404(get_user_model(),username=username)
+        articles=Article.objects.all().filter(likes=user.pk)
+        serializer = ArticleSerializer(articles,many=True)
+        return Response(serializer.data)
 
 # class FavoriteCommentAPIView(APIView):
 #     def get(self, request,username):
