@@ -21,7 +21,7 @@ class ArticleListAPIView(APIView):
         return Response(serializer.data)
     
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
