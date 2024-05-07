@@ -2,9 +2,9 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .serializers import UserSerializer, UserDetailSerializer
+from accounts.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from articles.serializers import ArticleSerializer
@@ -20,16 +20,29 @@ class UserSignup(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserLogin(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        if response.status_code == 200:
-            user = response.data.get('user')
-            refresh = RefreshToken.for_user(user)
-            response.data['refresh'] = str(refresh)
-            response.data['access'] = str(refresh.access_token)
-        return response
-
+class UserLogin(APIView):
+    def post(self,request):
+        username = request.data["username"]
+        password = request.data["password"]
+        user = User.objects.filter(username=username).first()
+        if user is not None:
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            response=Response(
+                {
+                    'user' : UserSerializer(user).data,
+                    "jwt_token" : {
+                        "access_token" : access_token,
+                        "refresh_token" : refresh_token
+                    },
+                },
+            status=status.HTTP_200_OK)
+            response.set_cookie("access_token", access_token, httponly=True)
+            response.set_cookie("refresh_token", refresh_token, httponly=True)
+            return response
+        else:
+            return Response({"message":"로그인 실패입니다."},status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetailAPIView(APIView):
     def get(self, request, username):
