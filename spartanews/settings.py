@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     #third_party
     'rest_framework',
     'rest_framework_simplejwt',
+    "django_seed",
     #local
     'accounts',
     'articles',
@@ -125,7 +126,7 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=3),
     "REFRESH_TOKEN_LIFETIME": timedelta(minutes=5),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
+    "BLACKLIST_AFTER_ROTATION": False,
 }
 
 # Password validation
