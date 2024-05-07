@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     #local
     'accounts',
     'articles',
+    'django_seed',
 ]
 
 MIDDLEWARE = [
