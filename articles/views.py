@@ -71,7 +71,7 @@ class CommentsView(APIView):
             author=request.user,
             article=article,
         )
-        serializer = CommentSerializer(comment)
+        serializer = CommentSerializer(comment, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
