@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from articles.serializers import ArticleSerializer, CommentSerializer
+from articles.serializers import ArticleDetailSerializer, ArticleSerializer, CommentSerializer
 from .models import Article
 from django.core import serializers
 from rest_framework.response import Response
@@ -22,14 +22,47 @@ class ArticleListAPIView(APIView):
     def post(self, request):
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)    
+        
+        
+        
+class ArticleDetailAPIView(APIView):
+    
+    
+    # permission_classes = [IsAuthenticated]
+		
+    def get_object(self, article_pk):
+        return get_object_or_404(Article, pk=article_pk)
+
+    def get(self, request, article_pk):
+        article = self.get_object(article_pk)
+        serializer = ArticleDetailSerializer(article)
+        return Response(serializer.data)
+
+    def put(self, request, article_pk):
+        article = self.get_object(article_pk)
+        serializer = ArticleDetailSerializer(article, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        article = self.get_object(pk)
+        article.delete()
+        data = {"pk": f"{pk} is deleted."}
+        return Response(data, status=status.HTTP_200_OK)
 
 class CommentsView(APIView):
-    # 댓글조회 나중에 article 조회로 옮길 것
-    def get(self,request, article_pk):
-        pass
+    # 댓글조회 나중에 article 조회랑 합칠 것
+    def get(self, request, article_pk):
+        article = get_object_or_404(Article, pk=article_pk)
+        comments = article.comment_set.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    # 댓글작성
     def post(self, request, article_pk):
         content = request.data.get('content')
         article = get_object_or_404(Article, pk=article_pk)
