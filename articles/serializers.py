@@ -2,6 +2,18 @@ from rest_framework import serializers
 from .models import Article, Comment
 from accounts.serializers import UserSerializer
 
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = "__all__"
+        read_only_fields = ("article", "author",)
+    def to_representation(self, instance):
+        ret = super(). to_representation(instance)
+        ret.pop("article")
+        return ret
+
+
 class ArticleSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     class Meta:
@@ -10,14 +22,8 @@ class ArticleSerializer(serializers.ModelSerializer):
         
         
 class ArticleDetailSerializer(ArticleSerializer):
-    pass
+    comments = CommentSerializer(many=True, read_only=True)
+    comments = serializers.IntegerField(sourece="comments.count", read_only=True)
 
-class CommentSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-    article = ArticleSerializer(read_only=True)
-    
-    
-    class Meta:
-        model = Comment
-        fields = "__all__"
+
 
