@@ -22,7 +22,7 @@ class ArticleListAPIView(APIView):
     def post(self, request):
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
+            serializer.save(author=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)    
         
         
@@ -48,10 +48,10 @@ class ArticleDetailAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.data)
 
-    def delete(self, request, pk):
-        article = self.get_object(pk)
+    def delete(self, request, article_pk):
+        article = self.get_object(article_pk)
         article.delete()
-        data = {"pk": f"{pk} is deleted."}
+        data = {"pk": f"{article_pk} is deleted."}
         return Response(data, status=status.HTTP_200_OK)
 
 class CommentView(APIView):

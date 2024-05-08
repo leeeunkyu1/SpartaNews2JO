@@ -7,8 +7,8 @@ from .serializers import UserSerializer, UserDetailSerializer
 from accounts.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from articles.serializers import ArticleSerializer
-from articles.models import Article
+from articles.serializers import ArticleSerializer, CommentSerializer
+from articles.models import Article,Comment
 class UserSignup(APIView):
     def post(self, request):
         print(request.data)
@@ -57,11 +57,12 @@ class WriteArticleAPIView(APIView):
         serializer = ArticleSerializer(articles,many=True)
         return Response(serializer.data)
 
-# class WriteCommentAPIView(APIView):
-#     def get(self, request,username):
-#         comments=get_object_or_404(Comment,author=username)
-#         serializer = UserSerializer(comments)
-#         return Response(serializer.data)
+class WriteCommentAPIView(APIView):
+    def get(self, request,username):
+        user=get_object_or_404(get_user_model(),username=username)
+        comments=Comment.objects.all().filter(author=user.pk)
+        serializer = CommentSerializer(comments,many=True)
+        return Response(serializer.data)
 
 class FavoriteArticleAPIView(APIView):
     def get(self, request,username):
@@ -70,9 +71,10 @@ class FavoriteArticleAPIView(APIView):
         serializer = ArticleSerializer(articles,many=True)
         return Response(serializer.data)
 
-# class FavoriteCommentAPIView(APIView):
-#     def get(self, request,username):
-#         comments=get_object_or_404(Comment,favorite=username)
-#         serializer = UserSerializer(comments)
-#         return Response(serializer.data)
+class FavoriteCommentAPIView(APIView):
+    def get(self, request,username):
+        user=get_object_or_404(get_user_model(),username=username)
+        comments=Comment.objects.all().filter(favorite=user.pk)
+        serializer = CommentSerializer(comments,many=True)
+        return Response(serializer.data)
 
