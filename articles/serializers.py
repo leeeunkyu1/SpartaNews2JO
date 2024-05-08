@@ -7,7 +7,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = "__all__"
-        read_only_fields = ("article", "author",)
+        read_only_fields = ("article", "author","favorite",)
     def to_representation(self, instance):
         ret = super(). to_representation(instance)
         ret.pop("article")

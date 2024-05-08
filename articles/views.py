@@ -54,15 +54,15 @@ class ArticleDetailAPIView(APIView):
         data = {"pk": f"{article_pk} is deleted."}
         return Response(data, status=status.HTTP_200_OK)
 
-class CommentsView(APIView):
-    # 댓글조회 나중에 article 조회랑 합칠 것
+class CommentView(APIView):
+    # 댓글 조회 나중에 article 조회랑 합칠 것
     def get(self, request, article_pk):
         article = get_object_or_404(Article, pk=article_pk)
         comments = article.comment_set.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # 댓글작성
+    # 댓글 작성
     def post(self, request, article_pk):
         content = request.data.get('content')
         article = get_object_or_404(Article, pk=article_pk)
@@ -89,11 +89,25 @@ class CommentsView(APIView):
     #     if serializer.is_valid(raise_exception=True):
     #         serializer.save()
     #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class CommentDetailView(APIView):
     # 댓글 수정
-    def put(self, request, article_pk):
-        pass
+    def put(self, request, article_pk, comment_pk):
+        comment = get_object_or_404(Comment, pk=comment_pk)
+        if request.user == comment.author:
+            serializer = CommentSerializer(comment, data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "You do not have permission to edit this comment."}, status=400)
     # 댓글 삭제
-    def delete(self, request, article_pk):
-        pass
+    def delete(self, request, article_pk, comment_pk):
+        comment = get_object_or_404(Comment, pk=comment_pk)
+        if comment.author == request.user:
+            comment.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"error": "You do not have permission to delete this comment."}, status=400)
 
 
