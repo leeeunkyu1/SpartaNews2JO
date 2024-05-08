@@ -23,7 +23,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         
 class ArticleDetailSerializer(ArticleSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-    comments = serializers.IntegerField(sourece="comments.count", read_only=True)
+    comments = serializers.IntegerField(source="comments.count", read_only=True)
 
 
 
