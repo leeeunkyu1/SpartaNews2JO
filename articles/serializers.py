@@ -20,7 +20,7 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = "__all__"
         
-        
+        read_only_fields = ("Like", "favorite",)
 class ArticleDetailSerializer(ArticleSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     comments = serializers.IntegerField(source="comments.count", read_only=True)
