@@ -49,6 +49,17 @@ class UserDetailAPIView(APIView):
         user = get_object_or_404(get_user_model(), username=username)
         serializer = UserDetailSerializer(user)
         return Response(serializer.data)
+    
+    def put(self,request, username):
+        user=get_object_or_404(get_user_model(),username=username)
+        if "username" in request.data:
+            return Response({"message":"username은 수정할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
+        if request.user != user:
+            return Response({"message":"권한이 없습니다."},status=status.HTTP_403_FORBIDDEN)
+        serializer=UserDetailSerializer(user,data=request.data,partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 class WriteArticleAPIView(APIView):
     def get(self, request,username):
