@@ -60,6 +60,21 @@ class UserDetailAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+    
+    def delete(self,request,username):
+        user=get_object_or_404(get_user_model(),username=username)
+        if request.user != user:
+            return Response({"message":"권한이 없습니다."},status=status.HTTP_403_FORBIDDEN)
+        else:
+            password = request.data.get("password")
+            if not password:
+                return Response({"error": "password is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not request.user.check_password(password):
+                return Response({"error": "password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+
+            request.user.delete()
+            return Response({"message": "user is deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 class WriteArticleAPIView(APIView):
     def get(self, request,username):
