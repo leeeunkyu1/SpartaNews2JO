@@ -71,9 +71,10 @@ class FavoriteArticleAPIView(APIView):
         serializer = ArticleSerializer(articles,many=True)
         return Response(serializer.data)
 
-# class FavoriteCommentAPIView(APIView):
-#     def get(self, request,username):
-#         comments=get_object_or_404(Comment,favorite=username)
-#         serializer = UserSerializer(comments)
-#         return Response(serializer.data)
+class FavoriteCommentAPIView(APIView):
+    def get(self, request,username):
+        user=get_object_or_404(get_user_model(),username=username)
+        comments=Comment.objects.all().filter(favorite=user.pk)
+        serializer = CommentSerializer(comments,many=True)
+        return Response(serializer.data)
 
