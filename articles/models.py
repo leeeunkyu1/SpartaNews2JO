@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
 
 class Article(models.Model):
     
@@ -26,3 +28,11 @@ class Article(models.Model):
     class Meta:
         verbose_name = '뉴스'
         verbose_name_plural = '뉴스모음'
+# Create your models here.d
+class Comment(models.Model):
+    content = models.TextField()
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    favorite = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="comment_favorites", blank="True")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
