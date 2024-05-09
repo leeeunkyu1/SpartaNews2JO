@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from articles.serializers import ArticleSerializer, CommentSerializer
 from articles.models import Article,Comment
+
+
 class UserSignup(APIView):
     def post(self, request):
         print(request.data)
@@ -49,6 +51,35 @@ class UserDetailAPIView(APIView):
         user = get_object_or_404(get_user_model(), username=username)
         serializer = UserDetailSerializer(user)
         return Response(serializer.data)
+    
+    def put(self,request, username):
+        user=get_object_or_404(get_user_model(),username=username)
+        if "username" in request.data:
+            return Response({"message":"username은 수정할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
+        if "password" in request.data:
+            if request.data["password"]!=request.data["password2"]:
+                return Response({"message":"비밀번호가 일치하지 않습니다."},status=status.HTTP_400_BAD_REQUEST)
+        if request.user != user:
+            return Response({"message":"권한이 없습니다."},status=status.HTTP_403_FORBIDDEN)
+        serializer=UserDetailSerializer(user,data=request.data,partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def delete(self,request,username):
+        user=get_object_or_404(get_user_model(),username=username)
+        if request.user != user:
+            return Response({"message":"권한이 없습니다."},status=status.HTTP_403_FORBIDDEN)
+        else:
+            password = request.data.get("password")
+            if not password:
+                return Response({"error": "password is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not request.user.check_password(password):
+                return Response({"error": "password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+
+            request.user.delete()
+            return Response({"message": "user is deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 class WriteArticleAPIView(APIView):
     def get(self, request,username):

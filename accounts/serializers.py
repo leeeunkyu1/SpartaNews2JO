@@ -30,6 +30,14 @@ class UserDetailSerializer(serializers.ModelSerializer):
             'favorite_articles',
             'favorite_comments',
         ]
+        read_only_fields =[
+            'username',
+            'date_joined',
+            'write_articles',
+            'write_comments',
+            'favorite_articles',
+            'favorite_comments',
+        ]
     
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -48,4 +56,13 @@ class UserDetailSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("username exists")
 
         return attrs
+    
+    def update(self,instance,validated_data):
+        password = validated_data.pop('password',None)
+        for key,value in validated_data.items():
+            setattr(instance,key,value)
+        if password is not None :
+            instance.set_password(password)
+        instance.save()
+        return instance
 
