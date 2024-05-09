@@ -100,26 +100,12 @@ class CommentView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # 댓글 작성
-    # def post(self, request, article_pk):
-    #     print('\n\n'+request.user)
-    #     content = request.data['content']
-    #     author = request.user
-    #     article = get_object_or_404(Article, pk=article_pk)
-    #     comment = Comment.objects.create(
-    #         content = content, author = author, article = article,
-    #     )
-    #     serializer = CommentSerializer(comment)
-    #     if serializer.is_valid(raise_exception=True):
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 class CommentDetailView(APIView):
     # 댓글 수정
     def put(self, request, article_pk, comment_pk):
         comment = get_object_or_404(Comment, pk=comment_pk)
         if request.user == comment.author:
-            serializer = CommentSerializer(comment, data=request.data)
+            serializer = CommentSerializer(comment, data=request.data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -134,6 +120,18 @@ class CommentDetailView(APIView):
         else:
             return Response({"error": "You do not have permission to delete this comment."}, status=400)
 
+class CommentFavoriteView(APIView):
+    def post(self, request, article_pk, comment_pk):
+        if request.user.is_authenticated:
+            comment = get_object_or_404(Comment, pk=comment_pk)
+            if comment.favorite.filter(pk=request.user.pk).exists():
+                comment.favorite.remove(request.user)
+            else:
+                comment.favorite.add(request.user)
+            serializer = CommentSerializer(comment)
+            return Response(serializer.data, status=200)
+        else:
+            return Response({"error": "need to login."}, status=400)
 
 class SearchView(generics.ListAPIView):
     serializer_class = ArticleSerializer
