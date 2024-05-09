@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenRefreshView
 from .serializers import UserSerializer, UserDetailSerializer
 from accounts.models import User
 from django.shortcuts import get_object_or_404
@@ -26,7 +25,6 @@ class UserSignup(APIView):
                 errors["email"] = "email already exists"
             if get_user_model().objects.filter(username=username).exists():
                 errors["username"] = "username already exists"
-
         if errors:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -35,8 +33,6 @@ class UserSignup(APIView):
             username=username,
             password=data.get("password"),
             intro = data.get("intro"),
-            first_name=data.get("first_name"),
-            last_name=data.get("last_name")
         )
         return Response({
             "id":user.id,
@@ -116,13 +112,13 @@ class UserDetailAPIView(APIView):
         else:
             password = request.data.get("password")
             if not password:
-                return Response({"error": "password is required"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "비밀번호를 입력해주세요"}, status=status.HTTP_400_BAD_REQUEST)
 
             if not request.user.check_password(password):
-                return Response({"error": "password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "입력한 비밀번호가 틀립니다"}, status=status.HTTP_400_BAD_REQUEST)
 
             request.user.delete()
-            return Response({"message": "user is deleted"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message": "회원탈퇴가 완료했습니다"}, status=status.HTTP_204_NO_CONTENT)
 
 class WriteArticleAPIView(APIView):
     def get(self, request,username):

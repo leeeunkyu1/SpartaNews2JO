@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-
-# Create your models here.
 LOCAL_HOST="http://127.0.0.1:8000/"
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     intro=models.TextField(blank=True)
+    first_name=None
+    last_name=None
     
     @property
     def write_articles(self):

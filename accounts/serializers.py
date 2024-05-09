@@ -6,6 +6,18 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+    
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret.pop("password")
+        ret.pop("last_login")
+        ret.pop("is_superuser")
+        ret.pop("is_staff")
+        ret.pop("is_active")
+        ret.pop("intro")
+        ret.pop("groups")
+        ret.pop("user_permissions")
+        return ret
 
     def create(self,validated_data):
         password = validated_data.pop('password',None)
