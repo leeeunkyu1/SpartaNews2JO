@@ -11,14 +11,36 @@ from articles.serializers import ArticleSerializer
 from articles.models import Article
 class UserSignup(APIView):
     def post(self, request):
-        print(request.data)
-        serializer = UserSerializer(data=request.data)
-        print(serializer)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data=request.data
+        email = data.get("email")
+        username = data.get("username")
+        errors = {}
+        if not email or not username:
+            errors["error"] = "email or username is required"
+        else:
+            if get_user_model().objects.filter(email=email).exists():
+                errors["email"] = "email already exists"
+            if get_user_model().objects.filter(username=username).exists():
+                errors["username"] = "username already exists"
 
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = get_user_model().objects.create_user(
+            email=email,
+            username=username,
+            password=data.get("password"),
+            intro = data.get("intro"),
+            first_name=data.get("first_name"),
+            last_name=data.get("last_name")
+        )
+        return Response({
+            "id":user.id,
+            "username":user.username,
+            "email":user.email,
+            "intro":user.intro
+        },
+        status=status.HTTP_201_CREATED)
 
 class UserLogin(APIView):
     def post(self,request):
