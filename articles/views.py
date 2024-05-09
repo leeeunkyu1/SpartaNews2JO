@@ -58,7 +58,26 @@ class ArticleDetailAPIView(APIView):
         article.delete()
         data = {"pk": f"{article_pk} is deleted."}
         return Response(data, status=status.HTTP_200_OK)
-
+    
+    
+class ArticleLikeAPIView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, article_pk):
+        article = get_object_or_404(Article, pk=article_pk)
+        article.likes.add(request.user)
+        return Response({"message": "Liked"}, status=status.HTTP_200_OK)
+    def delete(self, request, article_pk):
+        article = get_object_or_404(Article, pk=article_pk)
+        article.likes.remove(request.user)
+        return Response({"message": "Unliked"}, status=status.HTTP_200_OK)
+    
+    
+    
+    
+    
+    
 class CommentView(APIView):
     # 댓글 조회 나중에 article 조회랑 합칠 것
     def get(self, request, article_pk):
