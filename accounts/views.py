@@ -3,15 +3,15 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenRefreshView
 from .serializers import UserSerializer, UserDetailSerializer
 from accounts.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from articles.serializers import ArticleSerializer, CommentSerializer
 from articles.models import Article,Comment
-from django.http import JsonResponse
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework.permissions import IsAuthenticated
 
 class UserSignup(APIView):
     def post(self, request):
@@ -70,10 +70,12 @@ class UserLogin(APIView):
         else:
             return Response({"message":"로그인 실패입니다."},status=status.HTTP_400_BAD_REQUEST)
 
+
 class UserLogout(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         # access token을 쿠키에서 삭제
-        response = JsonResponse({'message': 'Successfully logged out'})
+        response = Response({"detail":"로그아웃 완료"},status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
         # refresh token을 블랙리스트에 추가
         refresh_token = request.COOKIES.get('refresh_token')
@@ -83,8 +85,9 @@ class UserLogout(APIView):
                 token.blacklist()
                 response.delete_cookie('refresh_token')
             except Exception as e:
-                response = JsonResponse({'message': 'Failed to blacklist refresh token'}, status=400)
-        return response
+                response = Response({"message":"로그아웃에 실패했습니다."},status=status.HTTP_400_BAD_REQUEST)
+            return response
+        return Response({"message":"이미 로그아웃했습니다"},status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetailAPIView(APIView):
     def get(self, request, username):
