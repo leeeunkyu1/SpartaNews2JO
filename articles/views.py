@@ -4,11 +4,12 @@ from .models import Article
 from django.core import serializers
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.views import APIView
 from .models import Article, Comment
 from django.conf import settings
-
+from rest_framework import generics
+from django.db.models import Q
 
 class ArticleListAPIView(APIView):
 
@@ -111,3 +112,21 @@ class CommentDetailView(APIView):
             return Response({"error": "You do not have permission to delete this comment."}, status=400)
 
 
+class SearchView(generics.ListAPIView):
+    serializer_class = ArticleSerializer
+    permission_classes = [AllowAny]
+    def get_queryset(self):
+        query_params = self.request.query_params
+        title = query_params.get("title")
+        content = query_params.get("content")
+        author = query_params.get("author")
+
+        q = Q()
+        if title:
+            q |= Q(title__icontains=title)
+        if content:
+            q |= Q(content__icontains=content)
+        if author:
+            q |= Q(author__username=author)
+
+        return Article.objects.filter(q)
