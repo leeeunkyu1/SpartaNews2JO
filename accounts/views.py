@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from articles.serializers import ArticleSerializer, CommentSerializer
 from articles.models import Article,Comment
+
+
 class UserSignup(APIView):
     def post(self, request):
         print(request.data)
