@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from articles.serializers import ArticleSerializer, CommentSerializer
 from articles.models import Article,Comment
+from django.http import JsonResponse
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserSignup(APIView):
@@ -45,6 +47,22 @@ class UserLogin(APIView):
             return response
         else:
             return Response({"message":"로그인 실패입니다."},status=status.HTTP_400_BAD_REQUEST)
+
+class UserLogout(APIView):
+    def post(self, request):
+        # access token을 쿠키에서 삭제
+        response = JsonResponse({'message': 'Successfully logged out'})
+        response.delete_cookie('access_token')
+        # refresh token을 블랙리스트에 추가
+        refresh_token = request.COOKIES.get('refresh_token')
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+                response.delete_cookie('refresh_token')
+            except Exception as e:
+                response = JsonResponse({'message': 'Failed to blacklist refresh token'}, status=400)
+        return response
 
 class UserDetailAPIView(APIView):
     def get(self, request, username):
