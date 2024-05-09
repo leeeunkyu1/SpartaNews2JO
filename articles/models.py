@@ -6,14 +6,14 @@ from django.contrib.auth import get_user_model
 
 class Article(models.Model):
     
-    ARTICLE_TYPES = (
+    Category = (
     ('news', '뉴스'),
     ('review', '리뷰'),
     ('interview', '인터뷰'),
     ('opinion', '칼럼'),
     )
     
-    type = models.CharField(max_length=20, choices=ARTICLE_TYPES, verbose_name="뉴스 유형")
+    type = models.CharField(max_length=20, choices=Category, verbose_name="뉴스 유형")
     title = models.CharField(max_length=255, verbose_name="제목")
     url = models.URLField(max_length=200, verbose_name="URL")
     content = models.TextField(verbose_name="내용")

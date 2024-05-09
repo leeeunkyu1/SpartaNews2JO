@@ -16,7 +16,11 @@ class ArticleListAPIView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        articles = Article.objects.all()
+        category = request.query_params.get('category')
+        if category:
+            articles = Article.objects.filter(type=category)
+        else:
+            articles = Article.objects.all()
         serializer = ArticleSerializer(articles, many=True)
         return Response(serializer.data)
 
