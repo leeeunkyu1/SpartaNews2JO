@@ -11,6 +11,7 @@ from articles.serializers import ArticleSerializer, CommentSerializer
 from articles.models import Article,Comment
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.hashers import check_password
 
 class UserSignup(APIView):
     def post(self, request):
@@ -47,6 +48,10 @@ class UserLogin(APIView):
         username = request.data["username"]
         password = request.data["password"]
         user = User.objects.filter(username=username).first()
+        if user is None:
+            return Response({"message":"존재하지 않는 아이디입니다."},status=status.HTTP_400_BAD_REQUEST)
+        if not check_password(password,user.password):
+            return Response({"message":"비밀번호 틀립니다."},status=status.HTTP_400_BAD_REQUEST)
         if user is not None:
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
@@ -83,7 +88,7 @@ class UserLogout(APIView):
             except Exception as e:
                 response = Response({"message":"로그아웃에 실패했습니다."},status=status.HTTP_400_BAD_REQUEST)
             return response
-        return Response({"message":"이미 로그아웃했습니다"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message":"로그인을 해주세요"},status=status.HTTP_400_BAD_REQUEST)
 
 class UserDetailAPIView(APIView):
     def get(self, request, username):
@@ -93,6 +98,7 @@ class UserDetailAPIView(APIView):
     
     def put(self,request, username):
         user=get_object_or_404(get_user_model(),username=username)
+        print(user, request.user)
         if "username" in request.data:
             return Response({"message":"username은 수정할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
         if "password" in request.data:

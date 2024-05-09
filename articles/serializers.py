@@ -19,11 +19,10 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = "__all__"
-        read_only_fields = ("Like", "favorite",)
+        read_only_fields = ("likes",)
         
 class ArticleDetailSerializer(ArticleSerializer):
-    comments = CommentSerializer(many=True, read_only=True)
-    comments = serializers.IntegerField(source="comments.count", read_only=True)
-
+    comment_set = CommentSerializer(many=True, read_only=True)
+    comments_cnt = serializers.IntegerField(source="comment_set.count", read_only=True)
 
 

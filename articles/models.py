@@ -14,8 +14,8 @@ class Article(models.Model):
     
     type = models.CharField(max_length=20, choices=Category, verbose_name="뉴스 유형")
     title = models.CharField(max_length=255, verbose_name="제목")
-    url = models.URLField(max_length=200, verbose_name="URL")
-    content = models.TextField(verbose_name="내용")
+    url = models.URLField(max_length=200, verbose_name="URL",blank=True)
+    content = models.TextField(verbose_name="내용",blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성 날짜")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="업데이트 날짜")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="작성자")
@@ -27,6 +27,7 @@ class Article(models.Model):
     class Meta:
         verbose_name = '뉴스'
         verbose_name_plural = '뉴스모음'
+        ordering = ['-id']
         
 # Create your models here.d
 class Comment(models.Model):

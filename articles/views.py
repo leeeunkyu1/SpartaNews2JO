@@ -68,11 +68,17 @@ class ArticleLikeAPIView(APIView):
     def put(self, request, article_pk):
         article = get_object_or_404(Article, pk=article_pk)
         article.likes.add(request.user)
-        return Response({"message": "Liked"}, status=status.HTTP_200_OK)
+        serializer = ArticleDetailSerializer(article, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
     def delete(self, request, article_pk):
         article = get_object_or_404(Article, pk=article_pk)
         article.likes.remove(request.user)
-        return Response({"message": "Unliked"}, status=status.HTTP_200_OK)
+        serializer = ArticleDetailSerializer(article, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
     
 class CommentView(APIView):
     # 댓글 조회 나중에 article 조회랑 합칠 것
