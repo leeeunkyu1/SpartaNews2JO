@@ -3,6 +3,7 @@ from accounts import views
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
+    TokenBlacklistView
 )
 
 
@@ -11,6 +12,7 @@ app_name = 'accounts'
 urlpatterns = [
     path('api/signup/', views.UserSignup.as_view(), name='signup'),
     path('api/login/', views.UserLogin.as_view(), name='login'),
+    path('api/logout/', TokenBlacklistView.as_view(), name='logout'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("<str:username>/", views.UserDetailAPIView.as_view(), name="profile"),
