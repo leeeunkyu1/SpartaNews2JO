@@ -27,7 +27,6 @@
 <br>
 
 ## API
-<<<<<<< HEAD
 <img src="./ref/accountsapi.PNG" width=900 height=250>
 <img src="./ref/articlesAPI.PNG" width=900 height=250>
 <br>
