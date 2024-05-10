@@ -21,7 +21,7 @@
 ## ERD
 <p align="center">
   <br>
-  <img src="./ref/ERD.png" width=650 height=250>
+  <img src="./ref/ERD.png" width=600 height=650>
   <br>
 </p>
 <br>
