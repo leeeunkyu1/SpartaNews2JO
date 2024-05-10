@@ -26,6 +26,14 @@
 </p>
 <br>
 
+## API
+<img src="./ref/accountsapi.PNG" width=950 height=450>
+<img src="./ref/articlesAPI.PNG" width=950 height=450>
+<br>
+
+## PIP LIST
+- requirements.txt 파일을 참고
+
 ## 구현 기능
 ### ACCOUNT
 - 회원가입
@@ -247,11 +255,3 @@
 <img src="./ref/검색.PNG" width=950 height=650><br>
 <figcaption>쿼리셋으로 제목, 내용, 작성자를 구분해서 가진 것 모두를 조회</figcaption>
 </div>
-
-## API
-<img src="./ref/accountsapi.PNG" width=950 height=450>
-<img src="./ref/articlesAPI.PNG" width=950 height=450>
-<br>
-
-## PIP LIST
-- requirements.txt 파일을 참고
