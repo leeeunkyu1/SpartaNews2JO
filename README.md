@@ -1,4 +1,4 @@
-# spartamarket-DRF
+# spartanews-DRF
 ### 프로젝트명 : 스파르타 뉴스 웹 만들기
 
 ## 프로젝트 소개
