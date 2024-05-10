@@ -98,7 +98,6 @@ class UserDetailAPIView(APIView):
     
     def put(self,request, username):
         user=get_object_or_404(get_user_model(),username=username)
-        print(user, request.user)
         if "username" in request.data:
             return Response({"message":"username은 수정할 수 없습니다."},status=status.HTTP_400_BAD_REQUEST)
         if "password" in request.data:
